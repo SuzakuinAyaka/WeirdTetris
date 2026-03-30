@@ -53,14 +53,14 @@ public final class UiUtils {
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(root, (view, insets) -> {
-            Insets topInsets = insets.getInsets(
-                    WindowInsetsCompat.Type.statusBars() | WindowInsetsCompat.Type.displayCutout()
+            Insets systemInsets = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
             );
             view.setPadding(
-                    initialLeft + topInsets.left,
-                    initialTop + topInsets.top,
-                    initialRight + topInsets.right,
-                    initialBottom
+                    initialLeft + systemInsets.left,
+                    initialTop + systemInsets.top,
+                    initialRight + systemInsets.right,
+                    initialBottom + systemInsets.bottom
             );
             return insets;
         });

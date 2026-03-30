@@ -3,6 +3,7 @@ package com.example.els.core;
 import android.app.Application;
 
 import com.google.android.material.color.DynamicColors;
+import com.google.android.material.color.DynamicColorsOptions;
 
 public class ElsApplication extends Application {
     @Override
@@ -10,9 +11,10 @@ public class ElsApplication extends Application {
         super.onCreate();
         AppSettingsManager.applyNightMode(this);
         AppSettingsManager.applyLocale(this);
-        if (AppSettingsManager.isDynamicColorEnabled(this)) {
-            DynamicColors.applyToActivitiesIfAvailable(this);
-        }
+        DynamicColorsOptions options = new DynamicColorsOptions.Builder()
+                .setPrecondition((activity, theme) -> AppSettingsManager.isDynamicColorEnabled(activity))
+                .build();
+        DynamicColors.applyToActivitiesIfAvailable(this, options);
     }
 }
 

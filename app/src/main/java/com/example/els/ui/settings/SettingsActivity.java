@@ -223,6 +223,7 @@ public class SettingsActivity extends BaseActivity {
             }
             AppSettingsManager.setDynamicColorEnabled(this, isChecked);
             setColorPresetEnabled(!isChecked, true);
+            recreate();
         });
 
         rgColorPreset.setOnCheckedChangeListener((group, checkedId) -> {
@@ -478,3 +479,8 @@ public class SettingsActivity extends BaseActivity {
         }
     }
 }
+
+
+
+
+

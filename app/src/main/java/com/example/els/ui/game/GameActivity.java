@@ -19,6 +19,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -48,6 +49,24 @@ public class GameActivity extends BaseActivity {
     private static final long HORIZONTAL_MOVE_INITIAL_DELAY_MS = 180L;
     private static final long HORIZONTAL_MOVE_REPEAT_DELAY_MS = 70L;
     private static final long COIN_INCOME_HINT_DURATION_MS = 1200L;
+    private static final String STATE_BOARD = "state_board";
+    private static final String STATE_HAS_CURRENT_PIECE = "state_has_current_piece";
+    private static final String STATE_CURRENT_TYPE = "state_current_type";
+    private static final String STATE_CURRENT_ROTATION = "state_current_rotation";
+    private static final String STATE_CURRENT_ROW = "state_current_row";
+    private static final String STATE_CURRENT_COL = "state_current_col";
+    private static final String STATE_NEXT_PIECE_TYPE = "state_next_piece_type";
+    private static final String STATE_SCORE = "state_score";
+    private static final String STATE_LINES = "state_lines";
+    private static final String STATE_LEVEL = "state_level";
+    private static final String STATE_HIGH_SCORE = "state_high_score";
+    private static final String STATE_MATCH_COINS_EARNED = "state_match_coins_earned";
+    private static final String STATE_GAME_OVER = "state_game_over";
+    private static final String STATE_PAUSED = "state_paused";
+    private static final String STATE_FREEZE_REMAIN_MS = "state_freeze_remain_ms";
+    private static final String STATE_COIN_BOOST_REMAIN_MS = "state_coin_boost_remain_ms";
+    private static final String STATE_ELAPSED_MS = "state_elapsed_ms";
+    private static final String STATE_QUICK_SLOTS = "state_quick_slots";
 
     private final int[][] board = new int[GameConstants.BOARD_ROWS][GameConstants.BOARD_COLS];
 
@@ -147,13 +166,25 @@ public class GameActivity extends BaseActivity {
 
         bindViews();
         bindActions();
-        startNewGame();
+        if (savedInstanceState != null && restoreGameState(savedInstanceState)) {
+            renderGame();
+            if (!gameOver && !exitConfirmShowing) {
+                scheduleNextTick();
+            }
+        } else {
+            startNewGame();
+        }
     }
-
-    @Override
+    @Override
     protected void onPause() {
         super.onPause();
         pauseGame();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        persistGameState(outState);
     }
 
     @Override
@@ -176,6 +207,114 @@ public class GameActivity extends BaseActivity {
         super.onBackPressed();
     }
 
+    private void persistGameState(@NonNull Bundle outState) {
+        outState.putIntArray(STATE_BOARD, flattenBoard());
+        boolean hasCurrentPiece = currentPiece != null;
+        outState.putBoolean(STATE_HAS_CURRENT_PIECE, hasCurrentPiece);
+        if (hasCurrentPiece) {
+            outState.putInt(STATE_CURRENT_TYPE, currentPiece.type);
+            outState.putInt(STATE_CURRENT_ROTATION, currentPiece.rotation);
+            outState.putInt(STATE_CURRENT_ROW, currentPiece.row);
+            outState.putInt(STATE_CURRENT_COL, currentPiece.col);
+        }
+        outState.putInt(STATE_NEXT_PIECE_TYPE, nextPieceType);
+        outState.putInt(STATE_SCORE, score);
+        outState.putInt(STATE_LINES, lines);
+        outState.putInt(STATE_LEVEL, level);
+        outState.putInt(STATE_HIGH_SCORE, highScore);
+        outState.putInt(STATE_MATCH_COINS_EARNED, matchCoinsEarned);
+        outState.putBoolean(STATE_GAME_OVER, gameOver);
+        outState.putBoolean(STATE_PAUSED, paused);
+        outState.putStringArray(STATE_QUICK_SLOTS, quickSlots);
+
+        long now = SystemClock.elapsedRealtime();
+        outState.putLong(STATE_FREEZE_REMAIN_MS, Math.max(0L, freezeUntilMs - now));
+        outState.putLong(STATE_COIN_BOOST_REMAIN_MS, Math.max(0L, coinBoostUntilMs - now));
+        outState.putLong(STATE_ELAPSED_MS, Math.max(0L, now - startTimeMs));
+    }
+
+    private boolean restoreGameState(@NonNull Bundle savedInstanceState) {
+        int[] flattenedBoard = savedInstanceState.getIntArray(STATE_BOARD);
+        if (flattenedBoard == null || flattenedBoard.length != GameConstants.BOARD_ROWS * GameConstants.BOARD_COLS) {
+            return false;
+        }
+
+        restoreBoard(flattenedBoard);
+        bagGenerator = new Tetromino.BagGenerator();
+        nextPieceType = savedInstanceState.containsKey(STATE_NEXT_PIECE_TYPE)
+                ? savedInstanceState.getInt(STATE_NEXT_PIECE_TYPE, Tetromino.TYPE_I)
+                : bagGenerator.nextClassicType();
+
+        score = savedInstanceState.getInt(STATE_SCORE, 0);
+        lines = savedInstanceState.getInt(STATE_LINES, 0);
+        level = Math.max(1, savedInstanceState.getInt(STATE_LEVEL, 1));
+        highScore = Math.max(AppSettingsManager.getHighScore(this), savedInstanceState.getInt(STATE_HIGH_SCORE, 0));
+        matchCoinsEarned = savedInstanceState.getInt(STATE_MATCH_COINS_EARNED, 0);
+        gameOver = savedInstanceState.getBoolean(STATE_GAME_OVER, false);
+        paused = savedInstanceState.getBoolean(STATE_PAUSED, false);
+        exitConfirmShowing = false;
+        softDrop = false;
+        stopHorizontalMoveRepeat();
+        gameHandler.removeCallbacks(hideCoinIncomeHintRunnable);
+        if (tvCoinIncomeHint != null) {
+            tvCoinIncomeHint.setText("");
+            tvCoinIncomeHint.setVisibility(itemModeEnabled ? View.INVISIBLE : View.GONE);
+        }
+
+        long now = SystemClock.elapsedRealtime();
+        freezeUntilMs = now + savedInstanceState.getLong(STATE_FREEZE_REMAIN_MS, 0L);
+        coinBoostUntilMs = now + savedInstanceState.getLong(STATE_COIN_BOOST_REMAIN_MS, 0L);
+        long elapsedMs = Math.max(0L, savedInstanceState.getLong(STATE_ELAPSED_MS, 0L));
+        startTimeMs = now - elapsedMs;
+
+        String[] restoredQuickSlots = savedInstanceState.getStringArray(STATE_QUICK_SLOTS);
+        if (restoredQuickSlots != null) {
+            quickSlots = new String[GameConstants.MAX_QUICK_SLOTS];
+            Arrays.fill(quickSlots, "");
+            for (int i = 0; i < GameConstants.MAX_QUICK_SLOTS && i < restoredQuickSlots.length; i++) {
+                quickSlots[i] = restoredQuickSlots[i] == null ? "" : restoredQuickSlots[i];
+            }
+        } else {
+            quickSlots = AppSettingsManager.getQuickSlots(this);
+        }
+
+        if (savedInstanceState.getBoolean(STATE_HAS_CURRENT_PIECE, false)) {
+            Tetromino restoredPiece = new Tetromino(savedInstanceState.getInt(STATE_CURRENT_TYPE, Tetromino.TYPE_I));
+            restoredPiece.rotation = savedInstanceState.getInt(STATE_CURRENT_ROTATION, 0);
+            restoredPiece.row = savedInstanceState.getInt(STATE_CURRENT_ROW, 0);
+            restoredPiece.col = savedInstanceState.getInt(STATE_CURRENT_COL, 3);
+            if (!canPlace(restoredPiece)) {
+                return false;
+            }
+            currentPiece = restoredPiece;
+        } else if (!gameOver) {
+            if (!spawnNextPiece()) {
+                gameOver = true;
+            }
+        }
+
+        return true;
+    }
+
+    private int[] flattenBoard() {
+        int[] flattened = new int[GameConstants.BOARD_ROWS * GameConstants.BOARD_COLS];
+        int index = 0;
+        for (int r = 0; r < GameConstants.BOARD_ROWS; r++) {
+            for (int c = 0; c < GameConstants.BOARD_COLS; c++) {
+                flattened[index++] = board[r][c];
+            }
+        }
+        return flattened;
+    }
+
+    private void restoreBoard(@NonNull int[] flattened) {
+        int index = 0;
+        for (int r = 0; r < GameConstants.BOARD_ROWS; r++) {
+            for (int c = 0; c < GameConstants.BOARD_COLS; c++) {
+                board[r][c] = flattened[index++];
+            }
+        }
+    }
     private void bindViews() {
         gameRoot = findViewById(R.id.gameRoot);
         boardView = findViewById(R.id.boardView);
@@ -1045,3 +1184,12 @@ public class GameActivity extends BaseActivity {
         dialog.show();
     }
 }
+
+
+
+
+
+
+
+
+
