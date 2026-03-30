@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Unified theme palette (night): all theme preset colors should read from this file -->
+    <color name="theme_blue_primary">#90CAF9</color>
+    <color name="theme_blue_on_primary">#0B1E32</color>
+    <color name="theme_blue_secondary">#4FC3F7</color>
+    <color name="theme_blue_tertiary">#81D4FA</color>
+
+    <color name="theme_green_primary">#A5D6A7</color>
+    <color name="theme_green_on_primary">#0F2A11</color>
+    <color name="theme_green_secondary">#81C784</color>
+    <color name="theme_green_tertiary">#66BB6A</color>
+
+    <color name="theme_orange_primary">#FFB74D</color>
+    <color name="theme_orange_on_primary">#3D1F00</color>
+    <color name="theme_orange_secondary">#FFA726</color>
+    <color name="theme_orange_tertiary">#FFCC80</color>
+</resources>

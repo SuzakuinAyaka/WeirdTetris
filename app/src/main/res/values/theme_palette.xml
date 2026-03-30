@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Unified theme palette: all theme preset colors should read from this file -->
+    <color name="theme_blue_primary">#145DA0</color>
+    <color name="theme_blue_on_primary">#FFFFFFFF</color>
+    <color name="theme_blue_secondary">#2E8BC0</color>
+    <color name="theme_blue_tertiary">#0C2D48</color>
+
+    <color name="theme_green_primary">#2E7D32</color>
+    <color name="theme_green_on_primary">#FFFFFFFF</color>
+    <color name="theme_green_secondary">#43A047</color>
+    <color name="theme_green_tertiary">#1B5E20</color>
+
+    <color name="theme_orange_primary">#E67E22</color>
+    <color name="theme_orange_on_primary">#FFFFFFFF</color>
+    <color name="theme_orange_secondary">#F39C12</color>
+    <color name="theme_orange_tertiary">#D35400</color>
+</resources>

@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="preset_blue_primary">@color/theme_blue_primary</color>
+    <color name="preset_blue_on_primary">@color/theme_blue_on_primary</color>
+    <color name="preset_blue_secondary">@color/theme_blue_secondary</color>
+    <color name="preset_blue_tertiary">@color/theme_blue_tertiary</color>
+
+    <color name="preset_green_primary">@color/theme_green_primary</color>
+    <color name="preset_green_on_primary">@color/theme_green_on_primary</color>
+    <color name="preset_green_secondary">@color/theme_green_secondary</color>
+    <color name="preset_green_tertiary">@color/theme_green_tertiary</color>
+
+    <color name="preset_orange_primary">@color/theme_orange_primary</color>
+    <color name="preset_orange_on_primary">@color/theme_orange_on_primary</color>
+    <color name="preset_orange_secondary">@color/theme_orange_secondary</color>
+    <color name="preset_orange_tertiary">@color/theme_orange_tertiary</color>
+
+    <color name="board_cell_empty">#1E2635</color>
+    <color name="board_grid_line">#3C4B63</color>
+
+    <color name="tetris_i">#26C6DA</color>
+    <color name="tetris_o">#FFEE58</color>
+    <color name="tetris_t">#BA68C8</color>
+    <color name="tetris_l">#FFB74D</color>
+    <color name="tetris_j">#64B5F6</color>
+    <color name="tetris_s">#81C784</color>
+    <color name="tetris_z">#EF9A9A</color>
+    <color name="tetris_bomb">#EF5350</color>
+    <color name="on_tetris_bomb">#FFFFFFFF</color>
+</resources>

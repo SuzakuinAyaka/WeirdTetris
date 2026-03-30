@@ -1,0 +1,29 @@
+﻿<resources>
+    <style name="Base.Theme.Els" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Theme.Els" parent="Base.Theme.Els" />
+
+    <style name="Theme.Els.Blue" parent="Base.Theme.Els">
+        <item name="colorPrimary">@color/theme_blue_primary</item>
+        <item name="colorOnPrimary">@color/theme_blue_on_primary</item>
+        <item name="colorSecondary">@color/theme_blue_secondary</item>
+        <item name="colorTertiary">@color/theme_blue_tertiary</item>
+    </style>
+
+    <style name="Theme.Els.Green" parent="Base.Theme.Els">
+        <item name="colorPrimary">@color/theme_green_primary</item>
+        <item name="colorOnPrimary">@color/theme_green_on_primary</item>
+        <item name="colorSecondary">@color/theme_green_secondary</item>
+        <item name="colorTertiary">@color/theme_green_tertiary</item>
+    </style>
+
+    <style name="Theme.Els.Orange" parent="Base.Theme.Els">
+        <item name="colorPrimary">@color/theme_orange_primary</item>
+        <item name="colorOnPrimary">@color/theme_orange_on_primary</item>
+        <item name="colorSecondary">@color/theme_orange_secondary</item>
+        <item name="colorTertiary">@color/theme_orange_tertiary</item>
+    </style>
+</resources>
