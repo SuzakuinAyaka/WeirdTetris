@@ -1,41 +1,51 @@
-# Changelog
+# 更新日志
 
-All notable changes to this project will be documented in this file.
+本文件记录项目的所有重要变更。
+
+## [1.2.1] - 2026-03-31
+
+### 修复
+
+- 修复中文环境下旋转暂停弹窗文案显示为英文的问题，补齐 `values-zh` 的 `rotation_pause_title`、`rotation_pause_message`、`resume_game` 资源。
+
+### 变更
+
+- 将 `CHANGELOG.md` 全量调整为中文描述，统一文档语言风格。
 
 ## [1.2.0] - 2026-03-31
 
-### Fixed
+### 修复
 
-- Fixed status bar overlap in tablet landscape by applying system bar insets correctly in DrawerLayout.
-- Fixed gameplay continuity after screen rotation: the game now pauses and prompts before resuming.
+- 修复平板横屏下状态栏遮挡内容的问题：在 `DrawerLayout` 场景中正确分发系统栏 `insets`。
+- 修复屏幕旋转后对局继续运行的问题：旋转恢复后会先暂停并提示，再由用户确认继续。
 
-### Changed
+### 变更
 
-- In tablet landscape mode, all operation buttons are now placed in a bottom action bar.
-- Added a blurred background behind the rotation pause dialog on Android 12+.
-- Version bumped from 1.1.0 to 1.2.0 (versionCode: 10100 -> 10200).
+- 平板横屏模式下，移动/旋转/下落操作按钮统一调整到底部操作栏。
+- 旋转暂停弹窗新增背景模糊效果（Android 12+）。
+- 版本升级：`1.1.0` -> `1.2.0`（`versionCode: 10100 -> 10200`）。
 
 ## [1.1.0] - 2026-03-30
 
-### Fixed
+### 修复
 
-- Switched Gradle Wrapper distribution to Tencent mirror mirrors.cloud.tencent.com/gradle and all package.
-- Fixed dynamic color toggle to take effect immediately after switching.
-- Fixed global WindowInsets handling to include bottom inset, avoiding covered bottom controls.
-- Fixed tablet rotation state loss by restoring game state in GameActivity.
+- Gradle Wrapper 分发地址切换为腾讯镜像 `mirrors.cloud.tencent.com/gradle`，并使用 `all` 包。
+- 修复动态配色开关不能即时生效的问题。
+- 修复全局 `WindowInsets` 仅处理顶部导致底部控件被遮挡的问题。
+- 修复平板旋转后对局状态丢失问题，`GameActivity` 新增对局状态保存与恢复。
 
-### Changed
+### 变更
 
-- Updated settings.gradle.kts to prioritize Tencent mirror and keep official repositories as fallback.
-- Version bumped from 1.0.0 to 1.1.0 (versionCode: 10000 -> 10100).
-- Restructured README and moved updates into this standalone changelog file.
+- `settings.gradle.kts` 调整为腾讯镜像优先，官方仓库作为兜底。
+- 版本升级：`1.0.0` -> `1.1.0`（`versionCode: 10000 -> 10100`）。
+- README 结构重构，并将更新记录独立到本文件。
 
-### Added
+### 新增
 
-- Added unit tests: GameConstantsTest and TetrominoBagGeneratorTest.
+- 新增单元测试：`GameConstantsTest`、`TetrominoBagGeneratorTest`。
 
 ## [1.0.0] - 2026-03-29
 
-### Added
+### 新增
 
-- Initial release including core gameplay (endless/challenge), item and coin systems, shop/inventory, settings/tutorial, and phone/tablet adaptation.
+- 首个版本发布：包含核心玩法（无尽/挑战）、道具与金币系统、商店/背包、设置/教程，以及手机与平板适配。
