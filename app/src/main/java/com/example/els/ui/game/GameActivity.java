@@ -67,6 +67,7 @@ public class GameActivity extends BaseActivity {
     private static final String STATE_COIN_BOOST_REMAIN_MS = "state_coin_boost_remain_ms";
     private static final String STATE_ELAPSED_MS = "state_elapsed_ms";
     private static final String STATE_QUICK_SLOTS = "state_quick_slots";
+    private static final String STATE_SHOW_ROTATION_PAUSE_DIALOG = "state_show_rotation_pause_dialog";
 
     private final int[][] board = new int[GameConstants.BOARD_ROWS][GameConstants.BOARD_COLS];
 
@@ -114,6 +115,7 @@ public class GameActivity extends BaseActivity {
     private boolean gameOver;
     private boolean softDrop;
     private boolean exitConfirmShowing;
+    private boolean rotationPauseShowing;
 
     private long startTimeMs;
     private long freezeUntilMs;
@@ -166,16 +168,24 @@ public class GameActivity extends BaseActivity {
 
         bindViews();
         bindActions();
+        boolean shouldShowRotationPauseDialog = false;
         if (savedInstanceState != null && restoreGameState(savedInstanceState)) {
+            shouldShowRotationPauseDialog = savedInstanceState.getBoolean(
+                    STATE_SHOW_ROTATION_PAUSE_DIALOG,
+                    false
+            );
             renderGame();
-            if (!gameOver && !exitConfirmShowing) {
+            if (shouldShowRotationPauseDialog && !gameOver) {
+                showRotationPauseDialog();
+            } else if (!gameOver && !exitConfirmShowing && !rotationPauseShowing) {
                 scheduleNextTick();
             }
         } else {
             startNewGame();
         }
     }
-    @Override
+
+    @Override
     protected void onPause() {
         super.onPause();
         pauseGame();
@@ -193,7 +203,7 @@ public class GameActivity extends BaseActivity {
         quickSlots = AppSettingsManager.getQuickSlots(this);
         updateQuickSlotPanel();
         updateInfoViews();
-        if (!gameOver && !exitConfirmShowing) {
+        if (!gameOver && !exitConfirmShowing && !rotationPauseShowing) {
             resumeGame();
         }
     }
@@ -226,6 +236,7 @@ public class GameActivity extends BaseActivity {
         outState.putBoolean(STATE_GAME_OVER, gameOver);
         outState.putBoolean(STATE_PAUSED, paused);
         outState.putStringArray(STATE_QUICK_SLOTS, quickSlots);
+        outState.putBoolean(STATE_SHOW_ROTATION_PAUSE_DIALOG, isChangingConfigurations() && !gameOver);
 
         long now = SystemClock.elapsedRealtime();
         outState.putLong(STATE_FREEZE_REMAIN_MS, Math.max(0L, freezeUntilMs - now));
@@ -253,6 +264,7 @@ public class GameActivity extends BaseActivity {
         gameOver = savedInstanceState.getBoolean(STATE_GAME_OVER, false);
         paused = savedInstanceState.getBoolean(STATE_PAUSED, false);
         exitConfirmShowing = false;
+        rotationPauseShowing = false;
         softDrop = false;
         stopHorizontalMoveRepeat();
         gameHandler.removeCallbacks(hideCoinIncomeHintRunnable);
@@ -489,6 +501,7 @@ public class GameActivity extends BaseActivity {
         gameOver = false;
         paused = false;
         exitConfirmShowing = false;
+        rotationPauseShowing = false;
         startTimeMs = SystemClock.elapsedRealtime();
 
         quickSlots = AppSettingsManager.getQuickSlots(this);
@@ -1102,6 +1115,7 @@ public class GameActivity extends BaseActivity {
                 .setPositiveButton(R.string.confirm_exit, (dialog, which) -> {
                     applyBlurEffect(false);
                     exitConfirmShowing = false;
+                    rotationPauseShowing = false;
                     if (lines <= 0) {
                         Intent intent = new Intent(this, WelcomeActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -1114,12 +1128,42 @@ public class GameActivity extends BaseActivity {
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
                     applyBlurEffect(false);
                     exitConfirmShowing = false;
+                    rotationPauseShowing = false;
                     resumeGame();
                 })
                 .setOnCancelListener(dialog -> {
                     applyBlurEffect(false);
                     exitConfirmShowing = false;
+                    rotationPauseShowing = false;
                     resumeGame();
+                })
+                .show();
+    }
+
+    private void showRotationPauseDialog() {
+        if (gameOver || exitConfirmShowing || rotationPauseShowing) {
+            return;
+        }
+        pauseGame();
+        rotationPauseShowing = true;
+        applyBlurEffect(true);
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.rotation_pause_title)
+                .setMessage(R.string.rotation_pause_message)
+                .setPositiveButton(R.string.resume_game, (dialog, which) -> {
+                    applyBlurEffect(false);
+                    rotationPauseShowing = false;
+                    if (!gameOver && !exitConfirmShowing) {
+                        resumeGame();
+                    }
+                })
+                .setOnCancelListener(dialog -> {
+                    applyBlurEffect(false);
+                    rotationPauseShowing = false;
+                    if (!gameOver && !exitConfirmShowing) {
+                        resumeGame();
+                    }
                 })
                 .show();
     }
@@ -1137,7 +1181,9 @@ public class GameActivity extends BaseActivity {
     private void showSettlementDialog(boolean activeExit) {
         pauseGame();
         gameOver = true;
-
+        exitConfirmShowing = false;
+        rotationPauseShowing = false;
+        applyBlurEffect(false);
         long elapsedMs = Math.max(0L, SystemClock.elapsedRealtime() - startTimeMs);
         long minutes = elapsedMs / 60000L;
         long seconds = (elapsedMs % 60000L) / 1000L;
@@ -1184,12 +1230,3 @@ public class GameActivity extends BaseActivity {
         dialog.show();
     }
 }
-
-
-
-
-
-
-
-
-

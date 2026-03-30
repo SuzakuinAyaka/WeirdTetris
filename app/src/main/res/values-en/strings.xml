@@ -168,5 +168,7 @@
     <string name="settings_section_appearance">Appearance</string>
     <string name="settings_section_preferences">Preferences</string>
     <string name="settings_section_system">System</string>
+    <string name="rotation_pause_title">Screen Rotated</string>
+    <string name="rotation_pause_message">The game is paused after rotation. Tap Resume to continue.</string>
+    <string name="resume_game">Resume</string>
 </resources>
-

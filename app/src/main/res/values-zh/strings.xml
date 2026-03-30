@@ -168,4 +168,7 @@
     <string name="settings_section_appearance">外观</string>
     <string name="settings_section_preferences">偏好</string>
     <string name="settings_section_system">系统</string>
+    <string name="rotation_pause_title">屏幕已旋转</string>
+    <string name="rotation_pause_message">旋转后游戏已暂停，点击继续即可恢复对局。</string>
+    <string name="resume_game">继续游戏</string>
 </resources>

@@ -1,4 +1,4 @@
-﻿# WeirdTetris (Android)
+# WeirdTetris (Android)
 
 一个基于 Java 开发的 Android 俄罗斯方块项目，采用 Material You（Material 3）视觉风格，支持经典玩法与道具玩法。
 
@@ -71,5 +71,5 @@
 
 ## 版本与更新
 
-- 当前版本：`1.1.0`
+- 当前版本：`1.2.0`
 - 历史更新见 [CHANGELOG.md](./CHANGELOG.md)
