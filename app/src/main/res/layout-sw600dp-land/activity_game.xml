@@ -318,20 +318,20 @@
                 app:iconTint="?attr/colorOnPrimary" />
 
             <Button
+                android:id="@+id/btnSoftDrop"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="18dp"
+                android:layout_weight="1"
+                android:text="&#8595;" />
+
+            <Button
                 android:id="@+id/btnMoveRight"
                 android:layout_width="0dp"
                 android:layout_height="52dp"
                 android:layout_marginStart="6dp"
                 android:layout_weight="1"
                 android:text="&#8594;" />
-
-            <Button
-                android:id="@+id/btnSoftDrop"
-                android:layout_width="0dp"
-                android:layout_height="52dp"
-                android:layout_marginStart="6dp"
-                android:layout_weight="1"
-                android:text="&#8595;" />
         </LinearLayout>
 
     </LinearLayout>

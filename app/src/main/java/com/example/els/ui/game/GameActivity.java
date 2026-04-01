@@ -49,6 +49,8 @@ public class GameActivity extends BaseActivity {
     private static final long HORIZONTAL_MOVE_INITIAL_DELAY_MS = 180L;
     private static final long HORIZONTAL_MOVE_REPEAT_DELAY_MS = 70L;
     private static final long COIN_INCOME_HINT_DURATION_MS = 1200L;
+    private static final long SOFT_DROP_DOUBLE_TAP_WINDOW_MS = 320L;
+    private static final long SOFT_DROP_TAP_MAX_DURATION_MS = 180L;
     private static final String STATE_BOARD = "state_board";
     private static final String STATE_HAS_CURRENT_PIECE = "state_has_current_piece";
     private static final String STATE_CURRENT_TYPE = "state_current_type";
@@ -123,6 +125,8 @@ public class GameActivity extends BaseActivity {
 
     private String[] quickSlots = new String[GameConstants.MAX_QUICK_SLOTS];
     private int horizontalMoveDirection;
+    private long softDropPressDownMs;
+    private long lastSoftDropTapUpMs;
     private final Runnable hideCoinIncomeHintRunnable = () -> {
         if (tvCoinIncomeHint != null) {
             tvCoinIncomeHint.setVisibility(View.INVISIBLE);
@@ -267,6 +271,8 @@ public class GameActivity extends BaseActivity {
         rotationPauseShowing = false;
         softDrop = false;
         stopHorizontalMoveRepeat();
+        softDropPressDownMs = 0L;
+        lastSoftDropTapUpMs = 0L;
         gameHandler.removeCallbacks(hideCoinIncomeHintRunnable);
         if (tvCoinIncomeHint != null) {
             tvCoinIncomeHint.setText("");
@@ -369,20 +375,39 @@ public class GameActivity extends BaseActivity {
                 rotatePiece();
             }
         });
-
         View downButton = findViewById(R.id.btnSoftDrop);
         downButton.setOnTouchListener((v, event) -> {
             if (gameOver) {
                 return false;
             }
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            int action = event.getActionMasked();
+            if (action == MotionEvent.ACTION_DOWN) {
+                softDropPressDownMs = SystemClock.elapsedRealtime();
                 softDrop = true;
                 scheduleNextTick();
                 return true;
             }
-            if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
                 softDrop = false;
                 scheduleNextTick();
+
+                if (action == MotionEvent.ACTION_UP && !paused && !gameOver) {
+                    long now = SystemClock.elapsedRealtime();
+                    long pressDuration = now - softDropPressDownMs;
+                    if (pressDuration <= SOFT_DROP_TAP_MAX_DURATION_MS) {
+                        if (lastSoftDropTapUpMs > 0
+                                && now - lastSoftDropTapUpMs <= SOFT_DROP_DOUBLE_TAP_WINDOW_MS) {
+                            lastSoftDropTapUpMs = 0L;
+                            hardDropCurrentPiece();
+                            return true;
+                        }
+                        lastSoftDropTapUpMs = now;
+                    } else {
+                        lastSoftDropTapUpMs = 0L;
+                    }
+                } else {
+                    lastSoftDropTapUpMs = 0L;
+                }
                 return true;
             }
             return false;
@@ -498,6 +523,8 @@ public class GameActivity extends BaseActivity {
         coinBoostUntilMs = 0L;
         softDrop = false;
         stopHorizontalMoveRepeat();
+        softDropPressDownMs = 0L;
+        lastSoftDropTapUpMs = 0L;
         gameOver = false;
         paused = false;
         exitConfirmShowing = false;
@@ -529,6 +556,17 @@ public class GameActivity extends BaseActivity {
         } else {
             renderGame();
         }
+        scheduleNextTick();
+    }
+
+    private void hardDropCurrentPiece() {
+        if (paused || gameOver || currentPiece == null) {
+            return;
+        }
+        while (movePiece(1, 0)) {
+            // keep moving down until the piece lands.
+        }
+        lockCurrentPiece();
         scheduleNextTick();
     }
 
@@ -588,6 +626,8 @@ public class GameActivity extends BaseActivity {
         softDrop = false;
         stopHorizontalMoveRepeat();
         gameHandler.removeCallbacks(tickRunnable);
+        softDropPressDownMs = 0L;
+        lastSoftDropTapUpMs = 0L;
     }
 
     private void resumeGame() {
@@ -1035,8 +1075,7 @@ public class GameActivity extends BaseActivity {
             if (countButton != null) {
                 countButton.setText(String.valueOf(count));
             }
-            String text = getString(GameConstants.getItemNameRes(itemId)) + "(" + count + ")";
-            useButton.setText(text);
+            useButton.setText(getString(GameConstants.getItemNameRes(itemId)));
             useButton.setEnabled(true);
         }
         if (quickSlotsChanged) {
