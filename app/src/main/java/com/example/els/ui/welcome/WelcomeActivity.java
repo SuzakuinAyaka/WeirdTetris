@@ -83,9 +83,6 @@ public class WelcomeActivity extends BaseActivity {
             return;
         }
 
-        boolean showItemEntrance = AppSettingsManager.isItemModeEnabled(this);
-        int visibility = showItemEntrance ? View.VISIBLE : View.GONE;
-        cardShop.setVisibility(visibility);
 
         startPreviewAnimation();
     }
@@ -312,3 +309,4 @@ public class WelcomeActivity extends BaseActivity {
         }
     }
 }
+

@@ -174,7 +174,7 @@
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardLanguage"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:clickable="true"
                     android:focusable="true"
@@ -211,7 +211,7 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="@string/language"
+                                android:text="@string/welcome_option_language_title"
                                 android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
                                 android:textStyle="bold" />
 
@@ -229,7 +229,7 @@
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardSettings"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:clickable="true"

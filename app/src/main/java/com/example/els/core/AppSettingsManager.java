@@ -24,6 +24,8 @@ public final class AppSettingsManager {
     private static final String KEY_COINS = "coins";
     private static final String KEY_HIGH_SCORE = "high_score";
     private static final String KEY_QUICK_SLOTS = "quick_slots";
+    private static final String KEY_LAST_SYSTEM_LANGUAGE_TAG = "last_system_language_tag";
+    private static final String KEY_SYSTEM_LANGUAGE_CHANGE_PENDING = "system_language_change_pending";
 
     public static final String COLOR_PRESET_BLUE = "blue";
     public static final String COLOR_PRESET_GREEN = "green";
@@ -98,6 +100,44 @@ public final class AppSettingsManager {
 
     public static void setLanguage(Context context, String language) {
         prefs(context).edit().putString(KEY_LANGUAGE, language).apply();
+    }
+
+    public static void refreshSystemLanguageChangeFlag(Context context) {
+        String currentSystemLanguageTag = resolveSystemLanguageTag();
+        SharedPreferences preferences = prefs(context);
+
+        if (!LANGUAGE_SYSTEM.equals(getLanguage(context))) {
+            preferences.edit()
+                    .putString(KEY_LAST_SYSTEM_LANGUAGE_TAG, currentSystemLanguageTag)
+                    .putBoolean(KEY_SYSTEM_LANGUAGE_CHANGE_PENDING, false)
+                    .apply();
+            return;
+        }
+
+        String lastSystemLanguageTag = preferences.getString(KEY_LAST_SYSTEM_LANGUAGE_TAG, "");
+        if (lastSystemLanguageTag == null || lastSystemLanguageTag.trim().isEmpty()) {
+            preferences.edit()
+                    .putString(KEY_LAST_SYSTEM_LANGUAGE_TAG, currentSystemLanguageTag)
+                    .apply();
+            return;
+        }
+
+        if (!currentSystemLanguageTag.equals(lastSystemLanguageTag)) {
+            preferences.edit()
+                    .putString(KEY_LAST_SYSTEM_LANGUAGE_TAG, currentSystemLanguageTag)
+                    .putBoolean(KEY_SYSTEM_LANGUAGE_CHANGE_PENDING, true)
+                    .apply();
+        }
+    }
+
+    public static boolean consumeSystemLanguageChangePending(Context context) {
+        SharedPreferences preferences = prefs(context);
+        boolean pending = preferences.getBoolean(KEY_SYSTEM_LANGUAGE_CHANGE_PENDING, false);
+        if (!pending) {
+            return false;
+        }
+        preferences.edit().putBoolean(KEY_SYSTEM_LANGUAGE_CHANGE_PENDING, false).apply();
+        return true;
     }
 
     public static boolean isItemModeEnabled(Context context) {
@@ -191,6 +231,15 @@ public final class AppSettingsManager {
         }
         List<String> allItems = GameConstants.ITEM_IDS;
         return allItems.contains(itemId) ? itemId : "";
+    }
+
+    private static String resolveSystemLanguageTag() {
+        LocaleListCompat localeList = LocaleListCompat.getAdjustedDefault();
+        if (localeList.isEmpty() || localeList.get(0) == null) {
+            return "";
+        }
+        String languageTag = localeList.get(0).toLanguageTag();
+        return languageTag == null ? "" : languageTag;
     }
 }
 

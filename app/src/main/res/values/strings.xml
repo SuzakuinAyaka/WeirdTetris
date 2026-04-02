@@ -10,6 +10,7 @@
     <string name="welcome_option_shop_desc">Buy items and configure two quick slots.</string>
     <string name="welcome_option_inventory_desc">Check item counts and configure quick slots.</string>
     <string name="welcome_option_language_desc">Switch app language.</string>
+    <string name="welcome_option_language_title" translatable="false">Language</string>
     <string name="welcome_option_settings_desc">Adjust theme and preferences.</string>
     <string name="mode_selection_title">Choose Your Mode</string>
     <string name="mode_selection_subtitle">Select a game mode before entering battle.</string>
@@ -154,7 +155,7 @@
     <string name="tutorial_title">Game Tutorial</string>
     <string name="tutorial_subtitle">Core rules and progression at a glance.</string>
     <string name="tutorial_basic_title">Basic Controls</string>
-    <string name="tutorial_basic_body">Move with left/right buttons.\nRotate with rotate button.\nHold down drop button for fast descent.\nLeft/right support long press for continuous movement.</string>
+    <string name="tutorial_basic_body">Move with left/right buttons.\nRotate with rotate button.\nHold down drop button for fast descent.\nDouble tap drop button to instantly hard drop.\nLeft/right support long press for continuous movement.</string>
     <string name="tutorial_style_title">Classic vs Item Mode</string>
     <string name="tutorial_style_body">Classic Mode: no item usage and no coin rewards.\nItem Mode: items can be purchased and used, and line clears grant coins.</string>
     <string name="tutorial_mode_type_title">Endless vs Challenge</string>
@@ -171,4 +172,5 @@
     <string name="rotation_pause_title">Screen Rotated</string>
     <string name="rotation_pause_message">The game is paused after rotation. Tap Resume to continue.</string>
     <string name="resume_game">Resume</string>
+    <string name="system_language_changed_restart_hint">System language changed. Please restart the app.</string>
 </resources>

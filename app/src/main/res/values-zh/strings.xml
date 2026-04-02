@@ -154,7 +154,7 @@
     <string name="tutorial_title">游戏教程</string>
     <string name="tutorial_subtitle">核心规则与成长机制一览。</string>
     <string name="tutorial_basic_title">基础操作</string>
-    <string name="tutorial_basic_body">使用左右按钮移动方块。\n使用旋转按钮旋转方块。\n长按下沉按钮可快速下落。\n左右移动支持长按连续移动。</string>
+    <string name="tutorial_basic_body">使用左右按钮移动方块。\n使用旋转按钮旋转方块。\n长按下沉按钮可快速下落。\n双击下沉按钮可让方块直接沉底。\n左右移动支持长按连续移动。</string>
     <string name="tutorial_style_title">经典模式与道具模式</string>
     <string name="tutorial_style_body">经典模式：不能使用道具，也不会获得金币。\n道具模式：可购买并使用道具，消行会获得金币。</string>
     <string name="tutorial_mode_type_title">无尽模式与挑战模式</string>
@@ -171,4 +171,6 @@
     <string name="rotation_pause_title">屏幕已旋转</string>
     <string name="rotation_pause_message">旋转后游戏已暂停，点击继续即可恢复对局。</string>
     <string name="resume_game">继续游戏</string>
+    <string name="system_language_changed_restart_hint">系统语言已变更，请重启应用。</string>
 </resources>
+
